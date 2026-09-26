@@ -15,27 +15,16 @@ namespace Inventory.Infrastructure
 {
     public static class DependencyInjection
     {
-        public static IServiceCollection AddInfrastructure(
-            this IServiceCollection services,
-            IConfiguration configuration)
+        public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddDbContext<InventoryDbContext>(options =>
-                options.UseInMemoryDatabase("InventoryDB"));
-
-            services.AddScoped<IApplicatonDbContext>(
-                provider =>
-                    provider.GetRequiredService<InventoryDbContext>());
-
+            services.AddDbContext<InventoryDbContext>(options => options.UseInMemoryDatabase("InventoryDB"));
+            services.AddScoped<IApplicatonDbContext>(provider => provider.GetRequiredService<InventoryDbContext>());
             services.AddScoped<IInventoryRepository, InventoryRepository>();
-
-
             services.AddScoped<InventoryTools>();
-
-            services.AddScoped<IAIAgentFactory, AIAgentFactory>();
-
+            services.AddTransient<IAIAgentFactory, AIAgentFactory>();
             services.AddScoped<ICustomerSupportAgent, CustomerSupportAgent>();
-
-
+            services.AddSingleton<IIntentAgent, IntentAgent>();
+            services.AddSingleton<INL2SQLAgent, NL2SQLAgent>();
             return services;
         }
     }

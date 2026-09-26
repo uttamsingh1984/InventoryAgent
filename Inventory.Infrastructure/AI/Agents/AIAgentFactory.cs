@@ -12,23 +12,25 @@ namespace Inventory.Infrastructure.AI.Agents
 {
     public interface IAIAgentFactory
     {
-         AIAgent CreateAgent (string agentType, string agentName);
+        AIAgent CreateAgent(string agentType);
+        string Instructions { get; set; }
+        List<AITool> AITools { get; set; }
     }
-    public class AIAgentFactory: IAIAgentFactory
+    public class AIAgentFactory : IAIAgentFactory
     {
         private readonly IConfiguration _configuration;
-        private readonly InventoryTools _inventoryTools;
-        public AIAgentFactory(IConfiguration configuration, InventoryTools inventoryTools)
+        public string Instructions { get; set; }
+        public List<AITool> AITools { get; set; } = new();
+        public AIAgentFactory(IConfiguration configuration)
         {
             _configuration = configuration;
-            _inventoryTools = inventoryTools;
         }
-        public AIAgent CreateAgent(string agentType, string agentName)
+        public AIAgent CreateAgent(string agentType)
         {
             switch (agentType)
             {
                 case "Ollama":
-                    return CreateOllamaAgent(agentName);
+                    return CreateOllamaAgent();
                 case "OpenAI":
                     return CreateOpenAIAgent();
                 default:
@@ -36,40 +38,27 @@ namespace Inventory.Infrastructure.AI.Agents
             }
         }
 
-        private AIAgent CreateOllamaAgent(string agentName)
+        private AIAgent CreateOllamaAgent()
         {
             // Read Ollama endpoint and model name
             var endpoint = _configuration["OLLAMA_ENDPOINT"];
             var modelName = _configuration["OLLAMA_MODEL_NAME"];
 
-            var file = Path.Combine(AppContext.BaseDirectory, $"AI\\Prompts\\{agentName}.txt");
+            //var deserializer = new DeserializerBuilder().Build();
 
-            var instructions = File.ReadAllText(file);
-
-            var deserializer = new DeserializerBuilder()
-            .Build();
-
-            // Create a chat client for Ollama
             var client = new OllamaApiClient(new Uri(endpoint), modelName);
 
-            // Use Ollama chat client to construct an AIAgent.
             var agent = client.AsAIAgent(
-                name: "CustomerSupportAgent",
-                description: instructions.Split("\n")[0],
-                instructions: instructions,
-                tools:
-                [
-                    AIFunctionFactory.Create(_inventoryTools.GetProductInfoAsync),
-                    AIFunctionFactory.Create(_inventoryTools.GetProductAvailabilityAsync)
-                ]
-            );
+                 name: "IntentAgent",
+                 //description: instructions.Split("\n")[0],
+                 instructions: this.Instructions,
+                 tools: this.AITools
+             );
             return agent;
         }
 
         private AIAgent CreateOpenAIAgent()
         {
-             // Create and return an OpenAI agent
-
             return null;
         }
 

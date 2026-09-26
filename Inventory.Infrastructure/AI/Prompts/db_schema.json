@@ -1,0 +1,62 @@
+{
+  "tables": {
+    "workscope": {
+      "fields": [
+        {
+          "name": "id",
+          "type": "int",
+          "description": "Unique identifier for workscope"
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "description": "Name of the workscope"
+        },
+        {
+          "name": "status",
+          "type": "string",
+          "description": "Current status (active, inactive, deleted)"
+        },
+        {
+          "name": "owner",
+          "type": "string",
+          "description": "Owner or responsible person"
+        },
+        {
+          "name": "created_date",
+          "type": "datetime",
+          "description": "Date when workscope was created"
+        }
+      ]
+    },
+    "milestone": {
+      "fields": [
+        {
+          "name": "id",
+          "type": "int",
+          "description": "Unique identifier for milestone"
+        },
+        {
+          "name": "workscope_id",
+          "type": "int",
+          "description": "Foreign key linking to workscope"
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "description": "Milestone title"
+        },
+        {
+          "name": "due_date",
+          "type": "datetime",
+          "description": "Deadline for milestone"
+        },
+        {
+          "name": "status",
+          "type": "string",
+          "description": "Milestone status (planned, completed)"
+        }
+      ]
+    }
+  }
+}
